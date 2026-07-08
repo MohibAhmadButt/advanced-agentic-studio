@@ -1,0 +1,12 @@
+# Python environment caches
+.venv/
+__pycache__/
+*.pyc
+
+# Local application artifacts & data ledgers
+outputs/
+*.db
+*.csv
+
+# Sensitive operating configuration files
+.env

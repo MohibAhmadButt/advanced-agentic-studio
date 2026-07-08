@@ -1,7 +1,10 @@
 import sqlite3
 import os
 import pandas as pd
-from config import DB_FILE, OUTPUT_DIR
+
+# Hardcode cloud-compatible writable paths for Hugging Face container environments
+DB_FILE = "/tmp/studio.db"
+OUTPUT_DIR = "/tmp"
 
 def init_db():
     """Initializes the relational schema ledger with image analytics support."""
@@ -44,7 +47,13 @@ def get_all_records():
         df = pd.read_sql_query("SELECT id, image_path, core_concept, art_style FROM portfolio ORDER BY id DESC", conn)
     if df.empty:
         return []
-    return [(row['image_path'], f"#{row['id']} | {row['core_concept']} ({row['art_style']})") for _, row in df.iterrows()]
+    
+    # Safely filter for active asset files in /tmp 
+    valid_items = []
+    for _, row in df.iterrows():
+        if os.path.exists(row['image_path']):
+            valid_items.append((row['image_path'], f"#{row['id']} | {row['core_concept']} ({row['art_style']})"))
+    return valid_items
 
 def get_single_record(record_id):
     with sqlite3.connect(DB_FILE) as conn:
@@ -55,7 +64,7 @@ def get_single_record(record_id):
 
 def export_vault_to_csv():
     """Compiles the SQLite log ledger cleanly into a downloadable dataset file."""
-    export_path = "studio_vault_export.csv"
+    export_path = "/tmp/studio_vault_export.csv"
     with sqlite3.connect(DB_FILE) as conn:
         df = pd.read_sql_query("SELECT * FROM portfolio ORDER BY id DESC", conn)
     df.to_csv(export_path, index=False)

@@ -145,4 +145,4 @@ with gr.Blocks(theme=gr.themes.Monochrome(radius_size="sm", font=["Courier New",
     export_btn.click(fn=lambda: gr.update(visible=True), inputs=None, outputs=csv_download)
 
 if __name__ == "__main__":
-    demo.launch()
+    demo.launch(server_name="0.0.0.0", server_port=7860)

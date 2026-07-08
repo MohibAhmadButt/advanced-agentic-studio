@@ -4,10 +4,10 @@ from datetime import datetime
 import database as db
 import engine as eng
 
-# Force cloud-compatible writable directory for Hugging Face Spaces
+# Writable directory configuration
 OUTPUT_DIR = "/tmp"
 
-# Ensure database initializes in a writable context
+# Initialize our clean backend framework
 db.init_db()
 CURRENT_RECORD_ID = None
 
@@ -30,6 +30,7 @@ def run_studio_pipeline(user_prompt, art_style, lighting, framing, modifier):
             
             dominant_color, contrast_score = eng.analyze_image_properties(img_obj)                        
             
+            # Target your exact parameter requirements
             CURRENT_RECORD_ID = db.insert_generation(                
                 timestamp_db, concept, art_style, lighting, framing, modifier, thoughts, expanded_prompt, saved_path, dominant_color, contrast_score            
             )        
@@ -62,7 +63,6 @@ def handle_gallery_inspection(evt: gr.SelectData):
             status_text = "Good 👍" if row['human_reward'] == 1 else ("Bad 👎" if row['human_reward'] == 0 else "Unrated")            
             meta_markdown = f"**Inspecting Archived Record #{row['id']}**\n* Preference Rating: `{status_text}`\n* Calculated Color Profile: `{row['dominant_color']}`\n* Root Mean Square Contrast: `{row['contrast_score']}`"                        
             
-            # Interactive visualization preview box tracking color fields            
             color_box_html = f"<div style='width:100%; height:40px; background-color:{row['dominant_color']}; border-radius:4px; border:1px solid #555;'></div>"                        
             
             return (                
@@ -132,7 +132,7 @@ with gr.Blocks(theme=gr.themes.Monochrome(radius_size="sm", font=["Courier New",
                     h_logic = gr.Textbox(label="Historical Director Logic", interactive=False, lines=3)                    
                     h_prompt = gr.Textbox(label="Historical Compiled Prompt String", interactive=False, lines=4)    
                     
-    # Wireframes Event Actions     
+    # Setup interactive triggers
     generate_btn.click(fn=run_studio_pipeline, inputs=[user_input, style_input, lighting_input, framing_input, modifier_input], outputs=[output_img, xai_thoughts, xai_prompt, download_file, rl_status])    
     upvote_btn.click(fn=lambda: handle_feedback("Good 👍"), inputs=None, outputs=rl_status)    
     downvote_btn.click(fn=lambda: handle_feedback("Bad 👎"), inputs=None, outputs=rl_status)        

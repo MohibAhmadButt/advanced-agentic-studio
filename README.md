@@ -1,3 +1,13 @@
+---
+title: Advanced Agentic Studio
+emoji: 🧠
+colorFrom: blue
+colorTo: indigo
+sdk: gradio
+app_file: app.py
+pinned: false
+license: mit
+---
 # 🧠 Advanced Agentic Art Studio v5.0
 
 An autonomous, full-stack AI Art Director dashboard that leverages **Gemini 2.5 Flash** for agentic prompt expansion and the **FLUX.1-schnell** image generation model through Hugging Face Inference API. The application includes a local **SQLite** database for image analytics, generation history, and reinforcement learning feedback.
